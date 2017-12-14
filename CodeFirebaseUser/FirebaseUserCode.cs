@@ -13,7 +13,10 @@ namespace CodeFirebaseUser
     public class FirebaseUserCode
     {
         public string Email, Name;
-        private Android.Net.Uri PhotoUrl;
+        private AflameUser user;
+        public Android.Net.Uri PhotoUrl;
+        public List<AflameUser> userList = new List<AflameUser>();
+
         public FirebaseUserCode()
         {
             var user = FirebaseAuth.Instance.CurrentUser;
@@ -25,11 +28,10 @@ namespace CodeFirebaseUser
                 Email = user.Email;
             }
         }
-        public async void GetUserDetails(FirebaseClient firebase, string child, AflameUser user)
+        public async void GetListOfUsers(FirebaseClient firebase, string child, AflameUser user)
         {
             var items = await firebase
                 .Child(child)
-                .Child(Email)
                 .OnceAsync<AflameUser>();
             foreach (var item in items)
             {
@@ -47,8 +49,18 @@ namespace CodeFirebaseUser
                     Residence=item.Object.Residence,
                     Username=item.Object.Username,                 
                 };
+                userList.Add(user);
             }
-                      
+                                 
+        }
+        public AflameUser GetUser()
+        {
+            AflameUser testUser = userList.Find(delegate(AflameUser x)
+            {
+                return  x.Email ==Email;
+            });
+            user = testUser;
+            return user;
         }
     }
 }
